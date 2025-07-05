@@ -15,6 +15,10 @@ def get_movies(list_id, verbose=False):
 
     movie_list = response['results']
 
+    total_pages = response['total_pages']
+    for idx in range(1, total_pages):
+        movie_list.extend(get_api_response(f"https://api.themoviedb.org/4/list/{list_id}?language=en-US&page={idx+1}")['results'])
+
     if verbose:
         print(",\n".join([str(item) for item in movie_list]))
     return movie_list
