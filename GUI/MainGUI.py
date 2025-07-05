@@ -246,7 +246,7 @@ class MyWindow(QWidget):
         self.movies.extend(movies)
 
         for idx, m in enumerate(movies):
-            movies[start_id + idx]['genres'] = ", ".join([genres[g_id] for g_id in m['genre_ids']])
+            m['genres'] = ", ".join([genres[g_id] for g_id in m['genre_ids']])
             callback = lambda *_, i=idx+start_id: self.set_movie(i)
             btn = ButtonWithOverlay(callback=callback)
             load_image(m['poster_path'], lambda x, b=btn: self.add_movie_list_pixmap(x, b))
