@@ -124,6 +124,11 @@ class MyWindow(QWidget):
         QShortcut(QKeySequence(Qt.Key.Key_N), self, self.goto_unrated_movie)
         QShortcut(QKeySequence(Qt.Key.Key_Left), self, self.goto_last_movie)
         QShortcut(QKeySequence(Qt.Key.Key_Right), self, self.goto_next_movie)
+        QShortcut(QKeySequence(Qt.Key.Key_1), self, lambda: self.rate(0))
+        QShortcut(QKeySequence(Qt.Key.Key_2), self, lambda: self.rate(1))
+        QShortcut(QKeySequence(Qt.Key.Key_3), self, lambda: self.rate(2))
+        QShortcut(QKeySequence(Qt.Key.Key_4), self, lambda: self.rate(3))
+        QShortcut(QKeySequence(Qt.Key.Key_5), self, lambda: self.rate(4))
 
     def rate(self, rating, movie_id=None, save=True):
         if movie_id is None:
