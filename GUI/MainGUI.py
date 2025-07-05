@@ -79,7 +79,7 @@ class MyWindow(QWidget):
         for i in range(5):
             button = QPushButton(rating_texts[i])
             button.setFixedHeight(40)
-            button.clicked.connect(lambda *_, rat=i: self.rate(-1 if self.ratings.get(self.movies[self.movie_idx]['id'], -1) == rat else rat))
+            button.clicked.connect(lambda *_, rat=i: self.toggle_rate(rat))
             self.rating_buttons.append(button)
             rating_layout.addWidget(button)
         self.main_layout.addLayout(rating_layout)
@@ -124,11 +124,14 @@ class MyWindow(QWidget):
         QShortcut(QKeySequence(Qt.Key.Key_N), self, self.goto_unrated_movie)
         QShortcut(QKeySequence(Qt.Key.Key_Left), self, self.goto_last_movie)
         QShortcut(QKeySequence(Qt.Key.Key_Right), self, self.goto_next_movie)
-        QShortcut(QKeySequence(Qt.Key.Key_1), self, lambda: self.rate(0))
-        QShortcut(QKeySequence(Qt.Key.Key_2), self, lambda: self.rate(1))
-        QShortcut(QKeySequence(Qt.Key.Key_3), self, lambda: self.rate(2))
-        QShortcut(QKeySequence(Qt.Key.Key_4), self, lambda: self.rate(3))
-        QShortcut(QKeySequence(Qt.Key.Key_5), self, lambda: self.rate(4))
+        QShortcut(QKeySequence(Qt.Key.Key_1), self, lambda: self.toggle_rate(0))
+        QShortcut(QKeySequence(Qt.Key.Key_2), self, lambda: self.toggle_rate(1))
+        QShortcut(QKeySequence(Qt.Key.Key_3), self, lambda: self.toggle_rate(2))
+        QShortcut(QKeySequence(Qt.Key.Key_4), self, lambda: self.toggle_rate(3))
+        QShortcut(QKeySequence(Qt.Key.Key_5), self, lambda: self.toggle_rate(4))
+
+    def toggle_rate(self, rating, movie_id=None, save=True):
+        self.rate(-1 if self.ratings.get(self.movies[self.movie_idx]['id'], -1) == rating else rating, movie_id, save)
 
     def rate(self, rating, movie_id=None, save=True):
         if movie_id is None:
