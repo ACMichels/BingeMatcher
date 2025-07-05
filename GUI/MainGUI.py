@@ -215,6 +215,10 @@ class MyWindow(QWidget):
     def set_movie(self, idx: int):
         self.movie_idx = idx
         movie_item = self.movies[idx]
+
+        movie_btn = self.movie_button_pane.itemAt(idx).widget()
+        self.movie_scroll_area.ensureWidgetVisible(movie_btn)
+
         load_image(movie_item['poster_path'], self.set_movie_poster_pixmap)
 
         self.title_text.setText(f"{movie_item['title']} ({movie_item['release_date'][:4]})")
