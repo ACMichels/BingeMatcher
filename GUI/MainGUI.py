@@ -1,5 +1,6 @@
 import json
 import os
+from functools import partial
 
 from PySide6.QtCore import QObject, QEvent, QSize
 from PySide6.QtGui import QPixmap, QFont, Qt, QPainter, QColor, QShortcut, QKeySequence
@@ -79,7 +80,7 @@ class MyWindow(QWidget):
         for i in range(5):
             button = QPushButton(rating_texts[i])
             button.setFixedHeight(40)
-            button.clicked.connect(lambda *_, rat=i: self.toggle_rate(rat))
+            button.clicked.connect(partial(self.toggle_rate, i))
             self.rating_buttons.append(button)
             rating_layout.addWidget(button)
         self.main_layout.addLayout(rating_layout)
@@ -124,11 +125,8 @@ class MyWindow(QWidget):
         QShortcut(QKeySequence(Qt.Key.Key_N), self, self.goto_unrated_movie)
         QShortcut(QKeySequence(Qt.Key.Key_Left), self, self.goto_last_movie)
         QShortcut(QKeySequence(Qt.Key.Key_Right), self, self.goto_next_movie)
-        QShortcut(QKeySequence(Qt.Key.Key_1), self, lambda: self.toggle_rate(0))
-        QShortcut(QKeySequence(Qt.Key.Key_2), self, lambda: self.toggle_rate(1))
-        QShortcut(QKeySequence(Qt.Key.Key_3), self, lambda: self.toggle_rate(2))
-        QShortcut(QKeySequence(Qt.Key.Key_4), self, lambda: self.toggle_rate(3))
-        QShortcut(QKeySequence(Qt.Key.Key_5), self, lambda: self.toggle_rate(4))
+        for i in range(5):
+            QShortcut(QKeySequence(self.tr(str(i+1))), self, partial(self.toggle_rate, i))
 
     def toggle_rate(self, rating, movie_id=None, save=True):
         self.rate(-1 if self.ratings.get(self.movies[self.movie_idx]['id'], -1) == rating else rating, movie_id, save)
