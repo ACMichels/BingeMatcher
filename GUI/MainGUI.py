@@ -38,6 +38,7 @@ class MyWindow(QWidget):
         super().__init__()
 
         self.movies: list[dict] = []
+        self.movie_buttons: list[ButtonWithOverlay] = []
         self.movie_idx = 0
         self.ratings = dict()
 
@@ -145,7 +146,7 @@ class MyWindow(QWidget):
 
         for i_id, item in enumerate(self.movies):
             if item['id'] == movie_id:
-                self.movie_button_pane.itemAt(i_id).widget().set_rating(rating)
+                self.movie_buttons[i_id].set_rating(rating)
 
         if rating >= 0:
             self.ratings[movie_id] = rating
@@ -226,8 +227,8 @@ class MyWindow(QWidget):
         self.set_movie((self.movie_idx - 1) % len(self.movies))
 
     def set_movie(self, idx: int):
-        self.movie_button_pane.itemAt(self.movie_idx).widget().deselect()
-        self.movie_button_pane.itemAt(idx).widget().select()
+        self.movie_buttons[self.movie_idx].deselect()
+        self.movie_buttons[idx].select()
 
         self.movie_idx = idx
         movie_item = self.movies[idx]
@@ -259,6 +260,7 @@ class MyWindow(QWidget):
             btn = ButtonWithOverlay(callback=callback)
             load_image(m['poster_path'], partial(self.add_movie_list_pixmap, btn))
             self.movie_button_pane.addWidget(btn)
+            self.movie_buttons.append(btn)
 
         total_width = 110 * self.movie_button_pane.count()
         self.scroll_widget.setMinimumWidth(total_width)
