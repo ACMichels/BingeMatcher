@@ -183,7 +183,6 @@ class MyWindow(QWidget):
         painter.fillRect(self.rect(), overlay)
 
         painter.end()
-        self.update()
 
     def load_current_movie_rating(self):
         movie_item = self.movies[self.movie_idx]
