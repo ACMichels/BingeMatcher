@@ -235,7 +235,7 @@ class MyWindow(QWidget):
         self.load_current_movie_rating()
 
     @staticmethod
-    def add_movie_list_pixmap(pixmap, btn):
+    def add_movie_list_pixmap(btn, pixmap):
         btn.set_pixmap(pixmap.scaledToHeight(150, Qt.SmoothTransformation))
 
     def add_movie_list(self, movies: list[dict], genres: dict):
@@ -244,9 +244,9 @@ class MyWindow(QWidget):
 
         for idx, m in enumerate(movies):
             m['genres'] = ", ".join([genres[g_id] for g_id in m['genre_ids']])
-            callback = lambda *_, i=idx+start_id: self.set_movie(i)
+            callback = partial(self.set_movie, idx+start_id)
             btn = ButtonWithOverlay(callback=callback)
-            load_image(m['poster_path'], lambda x, b=btn: self.add_movie_list_pixmap(x, b))
+            load_image(m['poster_path'], partial(self.add_movie_list_pixmap, btn))
             self.movie_button_pane.addWidget(btn)
 
         total_width = 110 * self.movie_button_pane.count()
