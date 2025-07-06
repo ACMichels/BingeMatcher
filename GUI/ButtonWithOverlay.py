@@ -2,7 +2,7 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import Qt, QPixmap
 from PySide6.QtWidgets import QVBoxLayout, QPushButton, QWidget, QLabel
 
-from Style import rating_colors
+from Style import rating_colors, select_height
 
 
 class ButtonWithOverlay(QWidget):
@@ -10,34 +10,51 @@ class ButtonWithOverlay(QWidget):
         super().__init__(parent)
 
         self.size = QSize(100, 150)
-        self.setFixedSize(self.size)
+        self.movable_size = QSize(100, 150 + select_height)
+        self.setFixedSize(self.movable_size)
 
-        # Base layout
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
+        self.setContentsMargins(0, 0, 0, 0)
+
+        self.spacing = QWidget()
+        self.spacing.setFixedHeight(select_height)
+
+        # Movable part
+        self.movable_widget = QWidget()
+        self.movable_widget.setFixedSize(self.movable_size)
+        self.movable_layout = QVBoxLayout()
+        self.movable_layout.setContentsMargins(0, 0, 0, 0)
+        self.movable_layout.setSpacing(0)
+
+        self.movable_widget.setLayout(self.movable_layout)
+
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.spacing)
+        self.layout.addWidget(self.movable_widget)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setSpacing(0)
+        self.setLayout(self.layout)
 
         # Button with icon
-        self.button = QPushButton()
+        self.button = QPushButton(self.movable_widget)
         self.button.setIconSize(self.size)
         self.button.setFixedSize(self.size)
         self.button.setStyleSheet("border: none;")
         if callback:
             self.button.clicked.connect(callback)
-        layout.addWidget(self.button)
 
         # Overlay widget
-        self.overlay = QWidget(self)
+        self.overlay = QWidget(self.movable_widget)
         self.overlay.setFixedSize(self.size)
         self.overlay.setStyleSheet("background-color: rgba(0, 0, 0, 0);")
         self.overlay.setAttribute(Qt.WA_TransparentForMouseEvents)
 
         self.v_layout = QVBoxLayout()
 
-        self.rating_label = QLabel(self)
+        self.rating_label = QLabel(self.movable_widget)
         self.rating_label.setStyleSheet("border: 0px solid #00000000;")
         self.rating_label.setFixedSize(QSize(30, 30))
         self.rating_label.setAttribute(Qt.WA_TransparentForMouseEvents)
-        self.rating_label.setAlignment(Qt.AlignCenter)  # Optional: center the text
+        self.rating_label.setAlignment(Qt.AlignCenter)
 
         self.v_layout.addStretch()
         self.v_layout.addWidget(self.rating_label)
@@ -56,3 +73,9 @@ class ButtonWithOverlay(QWidget):
             self.overlay.setStyleSheet(f"background-color: #00000000; border: 0px solid #00000000;")
             self.rating_label.setStyleSheet(f"border: 0px solid #00000000;")
             self.rating_label.setText(" ")
+
+    def select(self):
+        self.spacing.setFixedHeight(0)
+
+    def deselect(self):
+        self.spacing.setFixedHeight(select_height)

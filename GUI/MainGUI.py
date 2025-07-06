@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushBu
 from API import get_genres, get_movies
 from GUI.ButtonWithOverlay import ButtonWithOverlay
 from ImageLoading import load_image
-from Style import rating_colors, rating_texts
+from Style import rating_colors, rating_texts, select_height
 
 
 class ScrollRedirectFilter(QObject):
@@ -91,14 +91,14 @@ class MyWindow(QWidget):
         self.scroll_widget = QWidget()
         self.scroll_widget.setLayout(self.movie_button_pane)
         self.scroll_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
-        self.scroll_widget.setMinimumHeight(160)
+        self.scroll_widget.setMinimumHeight(160 + select_height)
         self.scroll_widget.setStyleSheet("background: transparent;")
         self.movie_scroll_area = QScrollArea()
         self.movie_scroll_area.setWidgetResizable(False)  # Crucial for horizontal scrolling
         self.movie_scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.movie_scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.movie_scroll_area.setStyleSheet("background: transparent;")
-        self.movie_scroll_area.setFixedHeight(185)
+        self.movie_scroll_area.setFixedHeight(185 + select_height)
         self.movie_scroll_area.setFrameShape(QScrollArea.NoFrame)
         self.movie_scroll_area.setWidget(self.scroll_widget)
 
@@ -218,6 +218,9 @@ class MyWindow(QWidget):
         self.set_movie((self.movie_idx - 1) % len(self.movies))
 
     def set_movie(self, idx: int):
+        self.movie_button_pane.itemAt(self.movie_idx).widget().deselect()
+        self.movie_button_pane.itemAt(idx).widget().select()
+
         self.movie_idx = idx
         movie_item = self.movies[idx]
 
