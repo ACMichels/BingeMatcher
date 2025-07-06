@@ -2,7 +2,7 @@ import os
 import requests
 from IO import get_cached_data, get_cache_exists, cache_data
 
-def get_api_response(url):
+def get_api_response(url: str):
     headers = {
         "accept": "application/json",
         "Authorization": f"Bearer {os.getenv('BB_TMDB_API_KEY')}"
@@ -10,7 +10,7 @@ def get_api_response(url):
     response = requests.get(url, headers=headers)
     return response.json()
 
-def get_movies(list_id, verbose=False):
+def get_movies(list_id: int, verbose: bool=False):
     response = get_api_response(f"https://api.themoviedb.org/4/list/{list_id}?language=en-US&page=1")
 
     movie_list = response['results']
@@ -23,7 +23,7 @@ def get_movies(list_id, verbose=False):
         print(",\n".join([str(item) for item in movie_list]))
     return movie_list
 
-def get_genres(cached=True, verbose=False):
+def get_genres(cached: bool=True, verbose: bool=False):
     if cached and get_cache_exists("genres"):
         return get_cached_data("genres")
 

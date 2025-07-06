@@ -3,7 +3,7 @@ import os
 from functools import partial
 
 from PySide6.QtCore import QObject, QEvent, QSize
-from PySide6.QtGui import QPixmap, QFont, Qt, QPainter, QColor, QShortcut, QKeySequence
+from PySide6.QtGui import QPixmap, QFont, Qt, QPainter, QColor, QShortcut, QKeySequence, QPaintEvent
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QScrollArea
 
 from API import get_genres, get_movies
@@ -17,7 +17,7 @@ class ScrollRedirectFilter(QObject):
         super().__init__()
         self.scroll_area = scroll_area
 
-    def eventFilter(self, watched, event):
+    def eventFilter(self, watched: QObject, event: QEvent):
         if event.type() == QEvent.Wheel:
             delta = event.angleDelta().y() / 2
             bar = self.scroll_area.horizontalScrollBar()
@@ -128,10 +128,10 @@ class MyWindow(QWidget):
         for i in range(5):
             QShortcut(QKeySequence(self.tr(str(i+1))), self, partial(self.toggle_rate, i))
 
-    def toggle_rate(self, rating, movie_id=None, save=True):
+    def toggle_rate(self, rating: int, movie_id: int|None=None, save: bool=True):
         self.rate(-1 if self.ratings.get(self.movies[self.movie_idx]['id'], -1) == rating else rating, movie_id, save)
 
-    def rate(self, rating, movie_id=None, save=True):
+    def rate(self, rating: int, movie_id: int|None=None, save: bool=True):
         if movie_id is None:
             movie_id = self.movies[self.movie_idx]['id']
 
@@ -160,7 +160,7 @@ class MyWindow(QWidget):
         with open('ratings.json', 'w') as f:
             json.dump(self.ratings, f)
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QPaintEvent):
         if self.background_image is None:
             return
 
@@ -191,11 +191,11 @@ class MyWindow(QWidget):
             else:
                 self.rating_buttons[idx].setStyleSheet("")
 
-    def set_background_pixmap(self, pixmap):
+    def set_background_pixmap(self, pixmap: QPixmap):
         self.background_image = pixmap
         self.update()
 
-    def set_movie_poster_pixmap(self, pixmap):
+    def set_movie_poster_pixmap(self, pixmap: QPixmap):
         self.poster_label.setPixmap(pixmap.scaled(300, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
     def goto_unrated_movie(self):
@@ -238,7 +238,7 @@ class MyWindow(QWidget):
         self.load_current_movie_rating()
 
     @staticmethod
-    def add_movie_list_pixmap(btn, pixmap):
+    def add_movie_list_pixmap(btn: ButtonWithOverlay, pixmap: QPixmap):
         btn.set_pixmap(pixmap.scaledToHeight(150, Qt.SmoothTransformation))
 
     def add_movie_list(self, movies: list[dict], genres: dict):

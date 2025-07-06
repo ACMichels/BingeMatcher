@@ -62,7 +62,7 @@ class ButtonWithOverlay(QWidget):
     def set_pixmap(self, pixmap: QPixmap):
         self.button.setIcon(pixmap)
 
-    def set_rating(self, rating=2):
+    def set_rating(self, rating:int=-1):
         if rating >= 0:
             if use_overlay_colors:
                 self.overlay.setStyleSheet(f"background-color: #33{rating_colors[rating]}; border: 3px solid #{rating_colors[rating]};")
