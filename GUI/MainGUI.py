@@ -3,7 +3,7 @@ import os
 from functools import partial
 
 from PySide6.QtCore import QObject, QEvent, QSize
-from PySide6.QtGui import QPixmap, QFont, Qt, QPainter, QColor, QShortcut, QKeySequence, QPaintEvent
+from PySide6.QtGui import QPixmap, QFont, Qt, QPainter, QColor, QShortcut, QKeySequence, QPaintEvent, QWheelEvent
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QScrollArea
 
 from API import get_genres, get_movies
@@ -18,12 +18,20 @@ class ScrollRedirectFilter(QObject):
         self.scroll_area = scroll_area
 
     def eventFilter(self, watched: QObject, event: QEvent):
-        if event.type() == QEvent.Wheel:
+        if event.type() == QEvent.Type.Wheel and isinstance(event, QWheelEvent):
             delta = event.angleDelta().y() / 2
             bar = self.scroll_area.horizontalScrollBar()
             bar.setValue(bar.value() - delta)
             return True
         return False
+
+def create_font(family: str, size: int, bold: bool=False, italic: bool=False):
+    font = QFont()
+    font.setFamily(family)
+    font.setPointSize(size)
+    font.setBold(bold)
+    font.setItalic(italic)
+    return font
 
 class MyWindow(QWidget):
     def __init__(self):
@@ -53,19 +61,19 @@ class MyWindow(QWidget):
 
         # Title text area
         self.title_text = QLabel("<Title>")
-        self.title_text.setFont(QFont("Roboto", 22, QFont.Bold))
+        self.title_text.setFont(create_font("Roboto", 22, bold=True))
         self.title_text.setStyleSheet("color: rgb(255, 255, 255);")
 
         # Small text area
         self.detail_text = QLabel("Text")
-        self.detail_text.setFont(QFont("Roboto", 10, italic=True))
+        self.detail_text.setFont(create_font("Roboto", 10, italic=True))
         self.detail_text.setStyleSheet("color: rgb(225, 225, 225);")
         self.detail_text.setFixedHeight(20)
         self.detail_text.setIndent(5)
 
         # Large text area
         self.description_text = QLabel("<Description>")
-        self.description_text.setFont(QFont("Roboto", 11))
+        self.description_text.setFont(create_font("Roboto", 11))
         self.description_text.setStyleSheet("color: rgb(255, 255, 255);")
         self.description_text.setWordWrap(True)
 
@@ -90,7 +98,7 @@ class MyWindow(QWidget):
 
         self.scroll_widget = QWidget()
         self.scroll_widget.setLayout(self.movie_button_pane)
-        self.scroll_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        self.scroll_widget.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         self.scroll_widget.setMinimumHeight(160 + select_height)
         self.scroll_widget.setStyleSheet("background: transparent;")
         self.movie_scroll_area = QScrollArea()
@@ -99,7 +107,7 @@ class MyWindow(QWidget):
         self.movie_scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.movie_scroll_area.setStyleSheet("background: transparent;")
         self.movie_scroll_area.setFixedHeight(185 + select_height)
-        self.movie_scroll_area.setFrameShape(QScrollArea.NoFrame)
+        self.movie_scroll_area.setFrameShape(QScrollArea.Shape.NoFrame)
         self.movie_scroll_area.setWidget(self.scroll_widget)
 
         self.scroll_filter = ScrollRedirectFilter(self.movie_scroll_area)
@@ -165,7 +173,7 @@ class MyWindow(QWidget):
             return
 
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.SmoothPixmapTransform)
+        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
 
         scale = min(self.background_image.width() / self.width(), self.background_image.height() / self.height())
 
