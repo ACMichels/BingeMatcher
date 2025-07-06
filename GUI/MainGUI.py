@@ -64,6 +64,7 @@ class MyWindow(QWidget):
         self.title_text = QLabel("<Title>")
         self.title_text.setFont(create_font("Roboto", 22, bold=True))
         self.title_text.setStyleSheet("color: rgb(255, 255, 255);")
+        self.title_text.setWordWrap(True)
 
         # Small text area
         self.detail_text = QLabel("Text")
