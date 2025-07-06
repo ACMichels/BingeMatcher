@@ -2,7 +2,7 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import Qt, QPixmap
 from PySide6.QtWidgets import QVBoxLayout, QPushButton, QWidget, QLabel
 
-from Style import rating_colors, select_height
+from Style import rating_colors, select_height, use_overlay_colors
 
 
 class ButtonWithOverlay(QWidget):
@@ -45,13 +45,11 @@ class ButtonWithOverlay(QWidget):
         # Overlay widget
         self.overlay = QWidget(self.movable_widget)
         self.overlay.setFixedSize(self.size)
-        self.overlay.setStyleSheet("background-color: rgba(0, 0, 0, 0);")
         self.overlay.setAttribute(Qt.WA_TransparentForMouseEvents)
 
         self.v_layout = QVBoxLayout()
 
         self.rating_label = QLabel(self.movable_widget)
-        self.rating_label.setStyleSheet("border: 0px solid #00000000;")
         self.rating_label.setFixedSize(QSize(30, 30))
         self.rating_label.setAttribute(Qt.WA_TransparentForMouseEvents)
         self.rating_label.setAlignment(Qt.AlignCenter)
@@ -66,13 +64,16 @@ class ButtonWithOverlay(QWidget):
 
     def set_rating(self, rating=2):
         if rating >= 0:
-            self.overlay.setStyleSheet(f"background-color: #33{rating_colors[rating]}; border: 3px solid #{rating_colors[rating]};")
+            if use_overlay_colors:
+                self.overlay.setStyleSheet(f"background-color: #33{rating_colors[rating]}; border: 3px solid #{rating_colors[rating]};")
+            else:
+                self.overlay.setStyleSheet(f"border: 3px solid #{rating_colors[rating]};")
             self.rating_label.setStyleSheet(f"background-color: #44000000; border: 3px solid #{rating_colors[rating]}; color: #{rating_colors[rating]}; font-weight: bold; font-size: 18px;")
             self.rating_label.setText(f"{rating+1}")
         else:
-            self.overlay.setStyleSheet(f"background-color: #00000000; border: 0px solid #00000000;")
-            self.rating_label.setStyleSheet(f"border: 0px solid #00000000;")
-            self.rating_label.setText(" ")
+            self.overlay.setStyleSheet("")
+            self.rating_label.setStyleSheet("")
+            self.rating_label.setText("")
 
     def select(self):
         self.spacing.setFixedHeight(0)
