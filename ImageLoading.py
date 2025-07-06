@@ -4,6 +4,7 @@ from PySide6.QtCore import Signal, QThread
 from PySide6.QtGui import QPixmap, QImageReader
 
 _threads = []
+image_mem = {}
 
 class ImageReader(QThread):
     image_loaded = Signal(QPixmap)
@@ -51,12 +52,20 @@ def check_cached(path):
     full_path = f"Cache/Images{path}"
     return os.path.isfile(full_path)
 
+def store_image_in_memory(path, pixmap):
+    image_mem[path] = pixmap
+
 def load_image(path, resolve_function):
+
+    if path in image_mem:
+        resolve_function(image_mem[path])
+        return
 
     worker = ImageReader(path) if check_cached(path) else ImageLoader(path)
 
     # Connect signals and slots
     worker.image_loaded.connect(resolve_function)
+    worker.image_loaded.connect(lambda pm: store_image_in_memory(path, pm))
     worker.image_loaded.connect(lambda pm: cache_image(path, pm))
     def cleanup():
         _threads.remove(worker)
