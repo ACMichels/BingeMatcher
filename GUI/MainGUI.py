@@ -103,8 +103,8 @@ class MyWindow(QWidget):
         self.scroll_widget.setStyleSheet("background: transparent;")
         self.movie_scroll_area = QScrollArea()
         self.movie_scroll_area.setWidgetResizable(False)  # Crucial for horizontal scrolling
-        self.movie_scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.movie_scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.movie_scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.movie_scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.movie_scroll_area.setStyleSheet("background: transparent;")
         self.movie_scroll_area.setFixedHeight(185 + select_height)
         self.movie_scroll_area.setFrameShape(QScrollArea.Shape.NoFrame)
@@ -204,7 +204,7 @@ class MyWindow(QWidget):
         self.update()
 
     def set_movie_poster_pixmap(self, pixmap: QPixmap):
-        self.poster_label.setPixmap(pixmap.scaled(300, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.poster_label.setPixmap(pixmap.scaled(300, 400, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
 
     def goto_unrated_movie(self):
         max_movie_idx = len(self.movies)
@@ -247,7 +247,7 @@ class MyWindow(QWidget):
 
     @staticmethod
     def add_movie_list_pixmap(btn: ButtonWithOverlay, pixmap: QPixmap):
-        btn.set_pixmap(pixmap.scaledToHeight(150, Qt.SmoothTransformation))
+        btn.set_pixmap(pixmap.scaledToHeight(150, Qt.TransformationMode.SmoothTransformation))
 
     def add_movie_list(self, movies: list[dict], genres: dict):
         start_id = len(self.movies)
