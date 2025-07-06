@@ -47,7 +47,7 @@ class MyWindow(QWidget):
         self.poster_label.setFixedSize(300, 400)
         self.top_layout.addWidget(self.poster_label)
 
-        # Add widgets to main layout
+        # Add widgets to the main layout
         self.detail_layout = QVBoxLayout()
         self.top_layout.addLayout(self.detail_layout)
 
