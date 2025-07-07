@@ -46,7 +46,6 @@ class MyWindow(QWidget):
         self.background_image: QPixmap | None = None
         self.source_rect = None
         self.painter = QPainter()
-        self.painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
         self.overlay_color = QColor(0, 0, 0, 128)
 
         # Main layout
@@ -194,6 +193,7 @@ class MyWindow(QWidget):
             self.calc_resize(self.size())
 
         self.painter.begin(self)
+        self.painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
 
         self.painter.drawPixmap(self.rect(), self.background_image, self.source_rect)
         self.painter.fillRect(self.rect(), self.overlay_color)
