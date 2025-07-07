@@ -3,7 +3,8 @@ import os
 from functools import partial
 
 from PySide6.QtCore import QObject, QEvent, QSize
-from PySide6.QtGui import QPixmap, QFont, Qt, QPainter, QColor, QShortcut, QKeySequence, QPaintEvent, QWheelEvent
+from PySide6.QtGui import QPixmap, QFont, Qt, QPainter, QColor, QShortcut, QKeySequence, QPaintEvent, QWheelEvent, \
+    QResizeEvent
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QScrollArea
 
 from API import get_genres, get_movies
@@ -43,6 +44,10 @@ class MyWindow(QWidget):
         self.ratings = dict()
 
         self.background_image: QPixmap | None = None
+        self.source_rect = None
+        self.painter = QPainter()
+        self.painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
+        self.overlay_color = QColor(0, 0, 0, 128)
 
         # Main layout
         self.main_layout = QVBoxLayout()
@@ -170,27 +175,30 @@ class MyWindow(QWidget):
         with open('ratings.json', 'w') as f:
             json.dump(self.ratings, f)
 
+    def resizeEvent(self, event: QResizeEvent, /):
+        self.calc_resize(event.size())
+
+    def calc_resize(self, size: QSize):
+        if self.background_image is None:
+            return
+        scale = min(self.background_image.width() / size.width(), self.background_image.height() / size.height())
+
+        self.source_rect = self.rect()
+        self.source_rect.setSize(QSize(int(self.source_rect.width() * scale), int(self.source_rect.height() * scale)))
+        self.source_rect.moveCenter(self.background_image.rect().center())
+
     def paintEvent(self, event: QPaintEvent):
         if self.background_image is None:
             return
+        if self.source_rect is None:
+            self.calc_resize(self.size())
 
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
+        self.painter.begin(self)
 
-        scale = min(self.background_image.width() / self.width(), self.background_image.height() / self.height())
+        self.painter.drawPixmap(self.rect(), self.background_image, self.source_rect)
+        self.painter.fillRect(self.rect(), self.overlay_color)
 
-        source_rect = self.rect()
-        source_rect.setSize(QSize(int(source_rect.width() * scale), int(source_rect.height() * scale)))
-        source_rect.moveCenter(self.background_image.rect().center())
-
-        # Draw the background image
-        painter.drawPixmap(self.rect(), self.background_image, source_rect)
-
-        # Apply a semi-transparent white overlay
-        overlay = QColor(0, 0, 0, 128)
-        painter.fillRect(self.rect(), overlay)
-
-        painter.end()
+        self.painter.end()
 
     def load_current_movie_rating(self):
         movie_item = self.movies[self.movie_idx]
@@ -203,6 +211,7 @@ class MyWindow(QWidget):
 
     def set_background_pixmap(self, pixmap: QPixmap):
         self.background_image = pixmap
+        self.calc_resize(self.size())
         self.update()
 
     def set_movie_poster_pixmap(self, pixmap: QPixmap):
