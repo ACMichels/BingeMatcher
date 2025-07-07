@@ -45,14 +45,14 @@ class ButtonWithOverlay(QWidget):
         # Overlay widget
         self.overlay = QWidget(self.movable_widget)
         self.overlay.setFixedSize(self.size)
-        self.overlay.setAttribute(Qt.WA_TransparentForMouseEvents)
+        self.overlay.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
 
         self.v_layout = QVBoxLayout()
 
         self.rating_label = QLabel(self.movable_widget)
         self.rating_label.setFixedSize(QSize(30, 30))
-        self.rating_label.setAttribute(Qt.WA_TransparentForMouseEvents)
-        self.rating_label.setAlignment(Qt.AlignCenter)
+        self.rating_label.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+        self.rating_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.v_layout.addStretch()
         self.v_layout.addWidget(self.rating_label)
