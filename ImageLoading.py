@@ -55,7 +55,10 @@ def check_cached(path):
 def store_image_in_memory(path, pixmap):
     image_mem[path] = pixmap
 
-def load_image(path, resolve_function):
+def load_image(path: str|None, resolve_function):
+
+    if path is None:
+        return
 
     if path in image_mem:
         resolve_function(image_mem[path])

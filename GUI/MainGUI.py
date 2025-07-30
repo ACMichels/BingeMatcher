@@ -246,9 +246,9 @@ class MyWindow(QWidget):
         movie_btn = self.movie_button_pane.itemAt(idx).widget()
         self.movie_scroll_area.ensureWidgetVisible(movie_btn)
 
-        load_image(movie_item['poster_path'], self.set_movie_poster_pixmap)
+        load_image(movie_item.get('poster_path', None), self.set_movie_poster_pixmap)
 
-        self.title_text.setText(f"{movie_item['title']} ({movie_item['release_date'][:4]})")
+        self.title_text.setText(f"{movie_item.get('title', movie_item.get('name', "<unknown title>"))} ({movie_item['release_date'][:4]})")
 
         self.detail_text.setText(movie_item['genres'])
         self.description_text.setText(movie_item["overview"])
@@ -265,10 +265,10 @@ class MyWindow(QWidget):
         self.movies.extend(movies)
 
         for idx, m in enumerate(movies):
-            m['genres'] = ", ".join([genres[g_id] for g_id in m['genre_ids']])
+            m['genres'] = ", ".join([(genres.get(g_id, "<genre unknown>")) for g_id in m.get('genre_ids', [])])
             callback = partial(self.set_movie, idx+start_id)
             btn = ButtonWithOverlay(callback=callback)
-            load_image(m['poster_path'], partial(self.add_movie_list_pixmap, btn))
+            load_image(m.get('poster_path', None), partial(self.add_movie_list_pixmap, btn))
             self.movie_button_pane.addWidget(btn)
             self.movie_buttons.append(btn)
 
