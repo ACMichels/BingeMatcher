@@ -83,9 +83,16 @@ class MyWindow(QWidget):
         self.description_text.setStyleSheet("color: rgb(255, 255, 255);")
         self.description_text.setWordWrap(True)
 
+        # Comments text area
+        self.comment_text = QLabel("<Comment>")
+        self.comment_text.setFont(create_font("Roboto", 11))
+        self.comment_text.setStyleSheet("color: rgb(255, 255, 255);")
+        self.comment_text.setWordWrap(True)
+
         self.detail_layout.addWidget(self.title_text)
         self.detail_layout.addWidget(self.detail_text)
         self.detail_layout.addWidget(self.description_text)
+        self.detail_layout.addWidget(self.comment_text)
         self.detail_layout.addStretch()
 
         # Movie list
@@ -252,6 +259,10 @@ class MyWindow(QWidget):
 
         self.detail_text.setText(movie_item['genres'])
         self.description_text.setText(movie_item["overview"])
+        if "comment" in movie_item:
+            self.comment_text.setText(f" — {movie_item["comment"]}")
+        else:
+            self.comment_text.setText("")
 
         load_image(movie_item['backdrop_path'], self.set_background_pixmap)
         self.load_current_movie_rating()

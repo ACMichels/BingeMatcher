@@ -14,10 +14,19 @@ def get_movies(list_id: int, verbose: bool=False):
     response = get_api_response(f"https://api.themoviedb.org/4/list/{list_id}?language=en-US&page=1")
 
     movie_list = response['results']
+    comments = response['comments']
+
 
     total_pages = response['total_pages']
     for idx in range(1, total_pages):
-        movie_list.extend(get_api_response(f"https://api.themoviedb.org/4/list/{list_id}?language=en-US&page={idx+1}")['results'])
+        new_response = get_api_response(f"https://api.themoviedb.org/4/list/{list_id}?language=en-US&page={idx+1}")
+        movie_list.extend(new_response['results'])
+        comments.update(new_response['comments'])
+
+    for movie in movie_list:
+        movie_id_str = f"movie:{movie['id']}"
+        if movie_id_str in comments:
+            movie['comment'] = comments[movie_id_str]
 
     if verbose:
         print(",\n".join([str(item) for item in movie_list]))
