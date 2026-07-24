@@ -64,12 +64,14 @@ def load_image(path: str|None, resolve_function):
         resolve_function(image_mem[path])
         return
 
-    worker = ImageReader(path) if check_cached(path) else ImageLoader(path)
+    already_cached = check_cached(path)
+    worker = ImageReader(path) if already_cached else ImageLoader(path)
 
     # Connect signals and slots
     worker.image_loaded.connect(resolve_function)
     worker.image_loaded.connect(lambda pm: store_image_in_memory(path, pm))
-    worker.image_loaded.connect(lambda pm: cache_image(path, pm))
+    if not already_cached:
+        worker.image_loaded.connect(lambda pm: cache_image(path, pm))
     def cleanup():
         _threads.remove(worker)
     worker.image_loaded.connect(cleanup)
